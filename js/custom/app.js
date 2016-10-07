@@ -15,7 +15,7 @@ MAP.ol3Map = function () {
       attributions: [new ol.Attribution({html: ATTRIBUTION})],
       format: new ol.format.GeoJSON(),
       tileGrid: ol.tilegrid.createXYZ({maxZoom: 16, tileSize: [256, 256]}),
-      url: 'https://vector.mapzen.com/osm/all/{z}/{x}/{y}.json?api_key=' + KEY,
+      url: 'https://tile.dev.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.json?api_key=' + KEY,
       tileLoadFunction: tileLoadFunction
     }),
     style: createOl3Style()
@@ -27,7 +27,7 @@ MAP.ol3Map = function () {
     view: new ol.View({
       center: ol.proj.transform([-73.99, 40.75], 'EPSG:4326', 'EPSG:3857'),
       zoom: 13,
-      maxZoom: 16
+      maxZoom: 15
     })
   });
 
@@ -50,6 +50,12 @@ MAP.ol3Map = function () {
         _placesInTile.forEach(function (el) {
           el.set('layer', 'place_label');
           _places[_tile].push(el);
+        });
+
+        var boundaries = format.readFeatures(json.boundaries);
+        boundaries.forEach(function (el) {
+          el.set('layer', 'boundaries');
+          all.push(el);
         });
 
         var roads = format.readFeatures(json.roads);
@@ -92,7 +98,7 @@ MAP.ol3Map = function () {
       var geom = feature.getGeometry().getType();
       //console.log(layer, kind, geom);
 
-      //water 
+      //water
       if ((layer === 'water' && kind === 'water-layer')
           || (layer === 'water' && kind === 'river')
           || (layer === 'water' && kind === 'stream')
@@ -110,7 +116,8 @@ MAP.ol3Map = function () {
         stroke.setColor('#93cbc4');
         stroke.setWidth(0.5);
         styles[length++] = line;
-      } else if (layer === 'water' || layer === 'ocean') {
+      } else if (layer === 'water' || layer === 'ocean'
+          || layer === 'lake' ) {
         fill.setColor('#9DD9D2');
         styles[length++] = polygon;
       } else if (layer === 'aeroway' && geom === 'Polygon') {
@@ -125,6 +132,7 @@ MAP.ol3Map = function () {
 
       //parks
       else if ((layer === 'landuse' && kind === 'park')
+          || (layer === 'landuse' && kind === 'national_park')
           || (layer === 'landuse' && kind === 'nature_reserve')
           || (layer === 'landuse' && kind === 'wood')
           || (layer === 'landuse' && kind === 'protected_land')) {
@@ -139,7 +147,24 @@ MAP.ol3Map = function () {
         styles[length++] = polygon;
       }
 
+	  //boundaries
+      else if (layer === 'boundaries' && kind === 'country') {
+        stroke.setColor('#aaaaaa');
+        stroke.setWidth(1.5);
+        styles[length++] = line;
+      }
+      else if (layer === 'boundaries' && (kind === 'region' || kind === 'macroregion')) {
+        stroke.setColor('#bbbbbb');
+        stroke.setWidth(0.5);
+        styles[length++] = line;
+      }
+
       //roads
+      else if ((resolution > 3 && layer === 'road' && kind === 'highway')) {
+        stroke.setColor('#FA4A48');
+        stroke.setWidth(1.5);
+        styles[length++] = line;
+      }
       else if ((resolution > 3 && layer === 'road' && kind === 'major_road')) {
         stroke.setColor('#fb7b7a');
         stroke.setWidth(1);
@@ -148,11 +173,6 @@ MAP.ol3Map = function () {
       else if ((resolution > 3 && layer === 'road' && kind === 'minor_road')) {
         stroke.setColor('#999');
         stroke.setWidth(0.5);
-        styles[length++] = line;
-      }
-      else if ((resolution > 3 && layer === 'road' && kind === 'highway')) {
-        stroke.setColor('#FA4A48');
-        stroke.setWidth(1.5);
         styles[length++] = line;
       }
 
