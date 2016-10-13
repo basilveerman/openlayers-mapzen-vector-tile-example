@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Mapzen + ol3 Vector tiles example</title>
-        <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"> 
+        <title>Mapzen vector tiles + OpenLayers 3 example</title>
+        <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
         <script src="js/vendor/jquery-1.11.2.min.js"></script>
         <link rel="stylesheet" href="css/vendor/ol.css" type="text/css">
         <script src="js/vendor/ol.js"></script>
         <style>
             #map {
                 background: #f8f4f0;
-                height: 700px;
-                width:1200px;
-                margin:0;
-                padding:0;
             }
-
         </style>
     </head>
     <body>
-        <h1>Mapzen + ol3 Vector tiles example</h1>
         <div id="map" class="map"></div>
         <script type="text/javascript" src="js/custom/app.js"></script>
+		<script src='//s3.amazonaws.com/assets-staging.mapzen.com/ui/components/bug/bug.min.js'></script>
+
+		<script>
+		// initialize mapzen bug
+		var mzBug = new MapzenBug({
+		  name: 'Map using OpenLayers 3 and Mapzen vector tiles',
+		  link: 'https://github.com/mapzen/openlayers-mapzen-vector-tile-example',
+		  tweet: 'Map using OpenLayers 3 and Mapzen vector tiles!',
+		  repo: 'https://github.com/mapzen/openlayers-mapzen-vector-tile-example'
+		});
+		</script>
     </body>
 </html>
